@@ -14,8 +14,8 @@ INSERT INTO _entities (entity_id, game_id, entity_type_id) VALUES
   (9, 1, 3),
   (10, 2, 1);
 INSERT INTO _entity_type_attributes (entity_type_id, attribute, value) VALUES
-  (1, 'mass', 10), (1, 'radius', 1),
-  (2, 'mass', 1),  (2, 'radius', 1);
+  (1, 'mass', 10), (1, 'radius', 1), (1, 'drag', 0.2),
+  (2, 'mass', 1),  (2, 'radius', 1), (2, 'drag', 0.5);
 
 INSERT INTO _entity_positions
   (entity_id, x, y, vx, vy) VALUES

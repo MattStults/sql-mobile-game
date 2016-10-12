@@ -49,7 +49,8 @@ SELECT
   x + vx AS destination_x,
   y + vy AS destination_y,
   MAX(CASE WHEN a.attribute = 'mass' THEN a.value ELSE 0.001 END) AS mass,
-  MAX(CASE WHEN a.attribute = 'radius' THEN a.value ELSE 0 END) AS radius
+  MAX(CASE WHEN a.attribute = 'radius' THEN a.value ELSE 0 END) AS radius,
+  MAX(CASE WHEN a.attribute = 'drag' THEN a.value ELSE 0 END) AS drag
 FROM _entity_positions AS p
 INNER JOIN _entities AS e ON p.entity_id = e.entity_id
 LEFT OUTER JOIN effective_entity_attributes AS a ON e.entity_id = a.entity_id
@@ -124,8 +125,8 @@ SELECT
   p.entity_id AS entity_id,
   destination_x AS x,
   destination_y AS y,
-  ROUND(SUM(CASE WHEN c.vx IS NOT NULL THEN c.vx ELSE p.vx END), 2) AS vx,
-  ROUND(SUM(CASE WHEN c.vy IS NOT NULL THEN c.vy ELSE p.vy END), 2) AS vy
+  ROUND(SUM(CASE WHEN c.vx IS NOT NULL THEN c.vx ELSE p.vx END * (1.0 - drag)), 2) AS vx,
+  ROUND(SUM(CASE WHEN c.vy IS NOT NULL THEN c.vy ELSE p.vy END * (1.0 - drag)), 2) AS vy
 FROM travel_plans AS p
 LEFT JOIN collision_results AS c ON p.entity_id = c.entity_id
 GROUP BY 1, 2, 3, 4;

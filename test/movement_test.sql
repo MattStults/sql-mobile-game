@@ -29,16 +29,16 @@ CREATE VIEW test_entity_positions_decision_0 AS
 
 DROP VIEW IF EXISTS test_move_decision_0;
 CREATE VIEW test_move_decision_0 AS
-  SELECT 'expected' AS role, 1 AS entity_id, CAST(5.0 AS STRING) AS x, CAST(0.0 AS STRING) AS y, CAST(4.09 AS STRING) AS vx, CAST(0.0 AS STRING) AS vy UNION
-  SELECT 'expected' AS role, 2 AS entity_id, CAST(5.0 AS STRING) AS x, CAST(0.0 AS STRING) AS y, CAST(9.09 AS STRING) AS vx, CAST(0.0 AS STRING) AS vy UNION
-  SELECT 'expected' AS role, 3 AS entity_id, CAST(10.0 AS STRING) AS x, CAST(5.0 AS STRING) AS y, CAST(0.0 AS STRING) AS vx, CAST(-5.0 AS STRING) AS vy UNION
-  SELECT 'expected' AS role, 4 AS entity_id, CAST(10.0 AS STRING) AS x, CAST(5.0 AS STRING) AS y, CAST(0.0 AS STRING) AS vx, CAST(5.0 AS STRING) AS vy UNION
-  SELECT 'expected' AS role, 5 AS entity_id, CAST(20.0 AS STRING) AS x, CAST(0.0 AS STRING) AS y, CAST(-0.95 AS STRING) AS vx, CAST(-1.9 AS STRING) AS vy UNION
-  SELECT 'expected' AS role, 6 AS entity_id, CAST(20.25 AS STRING) AS x, CAST(0.5 AS STRING) AS y, CAST(-3.8 AS STRING) AS vx, CAST(1.9 AS STRING) AS vy UNION
-  SELECT 'expected' AS role, 7 AS entity_id, CAST(50.0 AS STRING) AS x, CAST(5.0 AS STRING) AS y, CAST(2.75 AS STRING) AS vx, CAST(5.5 AS STRING) AS vy UNION
-  SELECT 'expected' AS role, 8 AS entity_id, CAST(49.75 AS STRING) AS x, CAST(4.5 AS STRING) AS y, CAST(2.0 AS STRING) AS vx, CAST(-1.0 AS STRING) AS vy UNION
+  SELECT 'expected' AS role, 1 AS entity_id, CAST(5.0 AS STRING) AS x, CAST(0.0 AS STRING) AS y, CAST(ROUND(4.09 * 0.8, 2) AS STRING) AS vx, CAST(0.0 AS STRING) AS vy UNION
+  SELECT 'expected' AS role, 2 AS entity_id, CAST(5.0 AS STRING) AS x, CAST(0.0 AS STRING) AS y, CAST(ROUND(9.095 * 0.5, 2) AS STRING) AS vx, CAST(0.0 AS STRING) AS vy UNION
+  SELECT 'expected' AS role, 3 AS entity_id, CAST(10.0 AS STRING) AS x, CAST(5.0 AS STRING) AS y, CAST(0.0 AS STRING) AS vx, CAST(ROUND(-5.0 * 0.5, 2) AS STRING) AS vy UNION
+  SELECT 'expected' AS role, 4 AS entity_id, CAST(10.0 AS STRING) AS x, CAST(5.0 AS STRING) AS y, CAST(0.0 AS STRING) AS vx, CAST(ROUND(5.0 * 0.5, 2) AS STRING) AS vy UNION
+  SELECT 'expected' AS role, 5 AS entity_id, CAST(20.0 AS STRING) AS x, CAST(0.0 AS STRING) AS y, CAST(ROUND(-0.95 * 0.5, 2) AS STRING) AS vx, CAST(ROUND(-1.9 * 0.5, 2) AS STRING) AS vy UNION
+  SELECT 'expected' AS role, 6 AS entity_id, CAST(20.25 AS STRING) AS x, CAST(0.5 AS STRING) AS y, CAST(ROUND(-3.8 * 0.5, 2) AS STRING) AS vx, CAST(ROUND(1.9 * 0.5, 2) AS STRING) AS vy UNION
+  SELECT 'expected' AS role, 7 AS entity_id, CAST(50.0 AS STRING) AS x, CAST(5.0 AS STRING) AS y, CAST(ROUND(2.745 * 0.5, 2) AS STRING) AS vx, CAST(ROUND(5.5 * 0.5, 2) AS STRING) AS vy UNION
+  SELECT 'expected' AS role, 8 AS entity_id, CAST(49.75 AS STRING) AS x, CAST(4.5 AS STRING) AS y, CAST(ROUND(2.0 * 0.5, 2) AS STRING) AS vx, CAST(ROUND(-1.0 * 0.5, 2) AS STRING) AS vy UNION
   SELECT 'expected' AS role, 9 AS entity_id, CAST(5.0 AS STRING) AS x, CAST(0.0 AS STRING) AS y, CAST(5.0 AS STRING) AS vx, CAST(0.0 AS STRING) AS vy UNION
-  SELECT 'expected' AS role, 10 AS entity_id, CAST(5.0 AS STRING) AS x, CAST(0.0 AS STRING) AS y, CAST(5.0 AS STRING) AS vx, CAST(0.0 AS STRING) AS vy;
+  SELECT 'expected' AS role, 10 AS entity_id, CAST(5.0 AS STRING) AS x, CAST(0.0 AS STRING) AS y, CAST(ROUND(5.0 * 0.8, 2) AS STRING) AS vx, CAST(0.0 AS STRING) AS vy;
 
 DROP VIEW IF EXISTS test_movement_decisions_decision_0;
 CREATE VIEW test_movement_decisions_decision_0 AS

@@ -121,8 +121,10 @@ CREATE VIEW test_effective_entity_attributes_simple AS
   FROM(
     SELECT 'expected' AS role, 1 AS entity_id, 'radius' AS attribute,           '1.0' AS value UNION
     SELECT 'expected' AS role, 1 AS entity_id, 'mass' AS attribute,            '10.0' AS value UNION
+    SELECT 'expected' AS role, 1 AS entity_id, 'drag' AS attribute,             '0.2' AS value UNION
     SELECT 'expected' AS role, 2 AS entity_id, 'radius' AS attribute,           '1.0' AS value UNION
     SELECT 'expected' AS role, 2 AS entity_id, 'mass' AS attribute,             '1.0' AS value UNION
+    SELECT 'expected' AS role, 2 AS entity_id, 'drag' AS attribute,             '0.5' AS value UNION
     SELECT 'actual' AS role, entity_id, attribute, CAST(value AS TEXT) AS value FROM effective_entity_attributes WHERE game_id = 1)
   GROUP BY entity_id, attribute, value;
 /* TESTS BEGIN HERE */
@@ -220,8 +222,8 @@ INSERT INTO _entities (game_id, entity_type_id) VALUES
   (1, 1),
   (1, 2);
 INSERT INTO _entity_type_attributes (entity_type_id, attribute, value) VALUES
-  (1, 'mass', 10), (1, 'radius', 1),
-  (2, 'mass', 1),  (2, 'radius', 1);
+  (1, 'mass', 10), (1, 'radius', 1), (1, 'drag', 0.2),
+  (2, 'mass', 1),  (2, 'radius', 1), (2, 'drag', 0.5);
 
 SELECT
   'entities_test; effective_entity_attributes simple: ' ||
