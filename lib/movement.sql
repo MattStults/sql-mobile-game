@@ -35,7 +35,20 @@ SELECT
 FROM _entity_positions AS p
 JOIN _entities AS e ON p.entity_id = e.entity_id
 JOIN _gameState AS g ON e.game_id = g.game_id;
-  
+
+DROP VIEW IF EXISTS entity_movement_details;
+CREATE VIEW entity_movement_details AS
+SELECT
+  e.game_id AS game_id,
+  e.entity_id AS entity_id,
+  CASE WHEN SUM(CASE WHEN a.attribute = 'mass' THEN a.value ELSE 0 END) >= 0.01
+       THEN SUM(CASE WHEN a.attribute = 'mass' THEN a.value ELSE 0 END)
+       ELSE 1.0 END AS mass,
+  MAX(CASE WHEN a.attribute = 'radius' THEN a.value ELSE 0.0 END) AS radius,
+  MAX(CASE WHEN a.attribute = 'drag' THEN a.value ELSE 0.0 END) AS drag
+FROM _entities AS e
+LEFT OUTER JOIN effective_entity_attributes AS a ON e.entity_id = a.entity_id
+GROUP BY 1, 2;
 
 DROP VIEW IF EXISTS travel_plans;
 CREATE VIEW travel_plans AS
@@ -48,13 +61,12 @@ SELECT
   vy,
   x + vx AS destination_x,
   y + vy AS destination_y,
-  MAX(CASE WHEN a.attribute = 'mass' THEN a.value ELSE 0.001 END) AS mass,
-  MAX(CASE WHEN a.attribute = 'radius' THEN a.value ELSE 0 END) AS radius,
-  MAX(CASE WHEN a.attribute = 'drag' THEN a.value ELSE 0 END) AS drag
+  mass,
+  radius,
+  drag
 FROM _entity_positions AS p
-INNER JOIN _entities AS e ON p.entity_id = e.entity_id
-LEFT OUTER JOIN effective_entity_attributes AS a ON e.entity_id = a.entity_id
-GROUP BY 1, 2, 3, 4, 5, 6, 7, 8;
+INNER JOIN entity_movement_details AS e ON p.entity_id = e.entity_id
+GROUP BY 1, 2, 3, 4, 5, 6, vx, vy;
 
 DROP VIEW IF EXISTS potential_collision_pairs;
 CREATE VIEW potential_collision_pairs AS
