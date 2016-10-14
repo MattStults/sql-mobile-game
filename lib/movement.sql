@@ -23,6 +23,39 @@ BEGIN
   WHERE game_id = NEW.game_id;
 END;
 
+DROP VIEW IF EXISTS entity_movement_interface;
+CREATE VIEW entity_movement_interface AS
+SELECT game_id, p.entity_id, x, y, vx, vy, NULL AS add_force_x, NULL AS add_force_y
+FROM _entity_positions AS p
+INNER JOIN _entities AS e ON p.entity_id = e.entity_id;
+
+DROP TRIGGER IF EXISTS entity_movement_interface_trigger_errors;
+CREATE TRIGGER entity_movement_interface_trigger_errors
+  INSTEAD OF UPDATE ON entity_movement_interface WHEN
+  OLD.game_id != NEW.game_id OR OLD.entity_id != NEW.entity_id
+  OR OLD.x != NEW.x OR OLD.y != NEW.y OR OLD.vx != NEW.vx
+  OR OLD.vy != NEW.vy OR NEW.add_force_x IS NULL OR NEW.add_force_y IS NULL
+BEGIN
+  SELECT RAISE (
+   ABORT,
+   'Attempted to update something other than both add_force_x AND add_force_y'
+   );
+END;
+
+DROP TRIGGER IF EXISTS entity_movement_interface_trigger;
+CREATE TRIGGER entity_movement_interface_trigger_update
+  INSTEAD OF UPDATE ON entity_movement_interface WHEN
+  OLD.game_id = NEW.game_id AND OLD.entity_id = NEW.entity_id
+  AND OLD.x = NEW.x AND OLD.y = NEW.y
+  AND OLD.vx = NEW.vx AND OLD.vy = NEW.vy
+  AND NEW.add_force_x IS NOT NULL AND NEW.add_force_y IS NOT NULL
+BEGIN
+  UPDATE _entity_positions
+  SET vx = (SELECT vx + (NEW.add_force_x )/ mass FROM travel_plans WHERE entity_id = NEW.entity_id),
+      vy = (SELECT vy + (NEW.add_force_y) / mass FROM travel_plans WHERE entity_id = NEW.entity_id)
+  WHERE entity_id = NEW.entity_id;
+END;
+
 DROP VIEW IF EXISTS rendered_entity_positions;
 CREATE VIEW rendered_entity_positions AS
 SELECT

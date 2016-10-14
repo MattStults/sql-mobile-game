@@ -100,6 +100,16 @@ SELECT
     FROM test_entity_positions_decision_1
     WHERE count != 2) END;
 
+UPDATE entity_movement_interface SET add_force_x = 20, add_force_y = 40 WHERE entity_id = 1;
+
+SELECT
+  'movement_test; updating the movement interface with a force correctly translates to velocity: ' ||
+  CASE WHEN
+    (SELECT vx = 5.27 AND vy = 4.0 FROM travel_plans WHERE entity_id = 1)
+  THEN 'passed'
+  ELSE 'failed'
+  END;
+
 /* TEST TEARDOWN */
 DROP VIEW IF EXISTS test_entity_positions_decision_0;
 DROP VIEW IF EXISTS test_move_decision_0;
