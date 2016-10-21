@@ -6,10 +6,23 @@ CREATE TABLE _entity_positions (
   entity_id INTEGER NOT NULL PRIMARY KEY,
   x REAL NOT NULL,
   y REAL NOT NULL,
+  a REAL NOT NULL,
   vx REAL NOT NULL,
   vy REAL NOT NULL,
+  va REAL NOT NULL,
   FOREIGN KEY (entity_id) REFERENCES _entities(entity_id) ON DELETE CASCADE
 );
+
+DROP TRIGGER IF EXISTS angle_validator;
+CREATE TRIGGER angle_validator
+  AFTER UPDATE
+  ON _entity_positions
+  WHEN NEW.a < 0 OR NEW.a > 3.14159
+BEGIN
+  UPDATE _entity_positions
+  SET a = (SELECT CASE WHEN NEW.a < 0 THEN NEW.a + 3.14159 ELSE NEW.a - 3.14159 END)
+  WHERE NEW.entity_id = entity_id;
+END;
 
 DROP TRIGGER IF EXISTS move_decision;
 CREATE TRIGGER move_decision
@@ -17,8 +30,8 @@ CREATE TRIGGER move_decision
   ON _gameState
   WHEN NEW.decision_point > OLD.decision_point
 BEGIN
-  INSERT OR REPLACE INTO _entity_positions(entity_id, x, y, vx, vy)
-  SELECT entity_id, x, y, vx, vy
+  INSERT OR REPLACE INTO _entity_positions(entity_id, x, y, a, vx, vy, va)
+  SELECT entity_id, x, y, a, vx, vy, va
   FROM movement_decisions
   WHERE game_id = NEW.game_id;
 END;
@@ -74,13 +87,13 @@ CREATE VIEW entity_movement_details AS
 SELECT
   e.game_id AS game_id,
   e.entity_id AS entity_id,
-  CASE WHEN SUM(CASE WHEN a.attribute = 'mass' THEN a.value ELSE 0 END) >= 0.01
-       THEN SUM(CASE WHEN a.attribute = 'mass' THEN a.value ELSE 0 END)
+  CASE WHEN SUM(CASE WHEN eea.attribute = 'mass' THEN eea.value ELSE 0 END) >= 0.01
+       THEN SUM(CASE WHEN eea.attribute = 'mass' THEN eea.value ELSE 0 END)
        ELSE 1.0 END AS mass,
-  MAX(CASE WHEN a.attribute = 'radius' THEN a.value ELSE 0.0 END) AS radius,
-  MAX(CASE WHEN a.attribute = 'drag' THEN a.value ELSE 0.0 END) AS drag
+  MAX(CASE WHEN eea.attribute = 'radius' THEN eea.value ELSE 0.0 END) AS radius,
+  MAX(CASE WHEN eea.attribute = 'drag' THEN eea.value ELSE 0.0 END) AS drag
 FROM _entities AS e
-LEFT OUTER JOIN effective_entity_attributes AS a ON e.entity_id = a.entity_id
+LEFT OUTER JOIN effective_entity_attributes AS eea ON e.entity_id = eea.entity_id
 GROUP BY 1, 2;
 
 DROP VIEW IF EXISTS travel_plans;
@@ -90,8 +103,10 @@ SELECT
   p.entity_id AS entity_id,
   x,
   y,
+  a,
   vx,
   vy,
+  va,
   x + vx AS destination_x,
   y + vy AS destination_y,
   mass,
@@ -170,8 +185,10 @@ SELECT
   p.entity_id AS entity_id,
   destination_x AS x,
   destination_y AS y,
+  a,
   ROUND(SUM(CASE WHEN c.vx IS NOT NULL THEN c.vx ELSE p.vx END * (1.0 - drag)), 2) AS vx,
-  ROUND(SUM(CASE WHEN c.vy IS NOT NULL THEN c.vy ELSE p.vy END * (1.0 - drag)), 2) AS vy
+  ROUND(SUM(CASE WHEN c.vy IS NOT NULL THEN c.vy ELSE p.vy END * (1.0 - drag)), 2) AS vy,
+  va
 FROM travel_plans AS p
 LEFT JOIN collision_results AS c ON p.entity_id = c.entity_id
 GROUP BY 1, 2, 3, 4;

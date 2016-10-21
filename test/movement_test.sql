@@ -110,6 +110,10 @@ SELECT
   ELSE 'failed'
   END;
 
+UPDATE _entity_positions SET a = 20.2 WHERE entity_id = 1;
+UPDATE _entity_positions SET a = -10.3 WHERE entity_id = 2;
+UPDATE _entity_positions SET a = 1.15 WHERE entity_id = 3;
+
 /* TEST TEARDOWN */
 DROP VIEW IF EXISTS test_entity_positions_decision_0;
 DROP VIEW IF EXISTS test_move_decision_0;
