@@ -112,7 +112,17 @@ SELECT
 
 UPDATE _entity_positions SET a = 20.2 WHERE entity_id = 1;
 UPDATE _entity_positions SET a = -10.3 WHERE entity_id = 2;
-UPDATE _entity_positions SET a = 1.15 WHERE entity_id = 3;
+UPDATE _entity_positions SET a = 0.15 WHERE entity_id = 3;
+
+SELECT
+  'movement_test; verifying a range (0, PI): ' ||
+  CASE WHEN
+    (SELECT abs(a - 1.35) < 0.01 FROM _entity_positions WHERE entity_id = 1) AND
+    (SELECT abs(a - 2.27) < 0.01 FROM _entity_positions WHERE entity_id = 2) AND
+    (SELECT abs(a - 0.15) < 0.01 FROM _entity_positions WHERE entity_id = 3)
+  THEN 'passed'
+  ELSE 'failed'
+  END;
 
 /* TEST TEARDOWN */
 DROP VIEW IF EXISTS test_entity_positions_decision_0;
